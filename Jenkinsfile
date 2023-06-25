@@ -24,6 +24,8 @@ pipeline {
                 sh 'echo $PATH'
             }
 
+        }
+        
         stage('Run Tests and Generate Coverage Report') {
             steps {
                 sh 'pip install -r requirements.txt'
