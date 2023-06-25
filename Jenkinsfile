@@ -8,9 +8,25 @@ pipeline {
             }
         }
 
-        stage('Clone and compile') {
+        stage('SCM') {
             steps {
-                git 'https://github.com/erev0s/VAmPI'
+                checkout scm
+            }
+        }
+
+        stage('Run Tests and Generate Coverage Report') {
+            steps {
+                sh 'pip install -r requirements.txt'
+                sh 'pytest --cov=models --cov-report xml:coverage.xml'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                def scannerHome = tool 'SonarScanner';
+                withSonarQubeEnv() {
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.python.coverage.reportPaths=coverage.xml"
+                }
             }
         }
     }
