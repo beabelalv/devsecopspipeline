@@ -25,9 +25,8 @@ pipeline {
             steps {
                 def scannerHome = tool 'SonarScanner';
                 withSonarQubeEnv() {
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.python.coverage.reportPaths=coverage.xml"
+                    sh "${scannerHome}/bin/sonar-scanner"
                 }
-            }
         }
     }
 }
