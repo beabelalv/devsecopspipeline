@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.8'
+        }
+    }
 
     stages {
         stage('Hello') {
@@ -25,7 +29,7 @@ pipeline {
             }
 
         }
-        
+
         stage('Run Tests and Generate Coverage Report') {
             steps {
                 sh 'pip install -r requirements.txt'
