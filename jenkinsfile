@@ -8,9 +8,9 @@ pipeline {
             }
         }
 
-        stage('World') {
+        stage('Clone and compile') {
             steps {
-                echo 'Hello, World, again!'
+                git 'https://github.com/erev0s/VAmPI'
             }
         }
     }
