@@ -1,10 +1,10 @@
 pipeline {
-    agent {
+    agent any /*{
         docker {
             image 'python:3.9' // Use the official Python Docker image
             args '-v /var/run/docker.sock:/var/run/docker.sock' // To use Docker in Docker
         }
-    }
+    }*/
 
     stages {
 
