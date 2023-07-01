@@ -10,7 +10,7 @@ pipeline {
 
         stage('Prerequirements') {
             steps {
-                sh 'apt install python3 -y'
+                //sh 'apt install python3 -y'
                 echo 'Checking Python...'
                 sh 'python3 --version || echo Python 3 is not installed'
                 echo 'Checking Pip...'
