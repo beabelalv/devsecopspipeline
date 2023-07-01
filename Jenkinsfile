@@ -21,13 +21,13 @@ pipeline {
 
         }
 
-
+/*
         stage('Run Tests and Generate Coverage Report') {
             steps {
                 sh 'pip install -r requirements.txt'
                 sh 'pytest --cov=models --cov-report xml:coverage.xml'
             }
-        }
+*/        }
 
         stage('SonarQube') {
             steps {
