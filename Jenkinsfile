@@ -24,5 +24,17 @@ pipeline {
         }
       }
     }
+
+    stage('SonarQube') {
+        steps {
+            script {
+                def scannerHome = tool 'SonarScanner1';
+                    withSonarQubeEnv() {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                }
+
+            }
+        }
   }
+ 
 }
