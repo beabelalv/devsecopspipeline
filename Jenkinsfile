@@ -49,7 +49,7 @@ pipeline {
 
   post {
       always {
-          dependencyCheckPublisher pattern: '**/dependency-check-report.xml', failedTotalAll: '0', usePreviousBuildAsReference: true
+          dependencyCheckPublisher pattern: '**/dependency-check-report.xml', failedTotalHigh: '0', failedTotalNormal: '0', failedTotalLow: '0'
       }
   }
 
