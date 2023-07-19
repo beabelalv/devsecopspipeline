@@ -25,13 +25,13 @@ pipeline {
       }
     }
 
-    stage('Dependency-Check') {
-                steps {
-                    script {
-                        dependencyCheck additionalArguments: '--scan target/*.jar'
-                    }
-                }
+    stage('Dependency-Check Analysis') {
+        steps {
+            script {
+                dependencyCheckAnalyzer datadir: 'dependency-check-data', hintsFile: '', includeCsvReports: false, includeHtmlReports: true, includeJsonReports: false, includeVulnReports: true, isAutoupdate: true, outdir: '', scanpath: '', skipOnScmChange: false, skipOnUpstreamChange: false, suppressionFile: '', zipExtensions: ''
             }
+        }
+    }
 
     stage('SonarQube') {
         steps {
@@ -48,8 +48,9 @@ pipeline {
 }
 
   post {
-    always {
-      dependencyCheckPublisher canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
-    }
+      always {
+          dependencyCheckPublisher pattern: '**/dependency-check-report.xml', failedTotalAll: '0', usePreviousBuildAsReference: true
+      }
   }
+
 }
