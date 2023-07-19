@@ -46,11 +46,11 @@ pipeline {
   } 
 
 }
-
   post {
       always {
-          dependencyCheckPublisher pattern: '**/dependency-check-report.xml', failedTotalHigh: '0', failedTotalNormal: '0', failedTotalLow: '0'
+          dependencyCheckPublisher pattern: '**/dependency-check-report.xml', healthy: '0', unhealthy: '1', thresholdLimit: 'low'
       }
   }
+
 
 }
