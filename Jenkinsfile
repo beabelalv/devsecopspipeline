@@ -28,8 +28,7 @@ pipeline {
     stage('Dependency-Check Analysis') {
         steps {
             script {
-                dependencyCheckAnalyzer datadir: 'dependency-check-data', hintsFile: '', includeCsvReports: false, includeHtmlReports: true, includeJsonReports: false, includeVulnReports: true, isAutoupdate: true, outdir: '', scanpath: '', skipOnScmChange: false, skipOnUpstreamChange: false, suppressionFile: '', zipExtensions: ''
-            }
+                    dependencyCheck additionalArguments: '--scan /path/to/scan', odcInstallation: 'Default'            }
         }
     }
 
