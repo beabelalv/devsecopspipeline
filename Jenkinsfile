@@ -25,6 +25,14 @@ pipeline {
       }
     }
 
+    stage('Dependency-Check') {
+                steps {
+                    script {
+                        dependencyCheck additionalArguments: '--scan target/*.jar'
+                    }
+                }
+            }
+
     stage('SonarQube') {
         steps {
             script {
@@ -35,7 +43,13 @@ pipeline {
 
             }
         }
-  }
- 
+  } 
+
 }
+
+  post {
+    always {
+      dependencyCheckPublisher canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
+    }
+  }
 }
