@@ -7,7 +7,7 @@ pipeline {
         spec:
           containers:
           - name: python
-            image: beatrizbeltranalv/python-image:latest
+            image: python:3
             command:
             - cat
             tty: true
