@@ -7,7 +7,7 @@ pipeline {
         spec:
           containers:
           - name: python
-            image: python:3
+            image: python:3-buster
             command:
             - cat
             tty: true
@@ -27,7 +27,6 @@ pipeline {
 
     stage ('Source Composition Analysis: DependencyCheck') {
       steps {
-         sh 'sudo apt-get update && apt-get install -y wget'
          sh 'rm owasp* || true'
          sh 'wget "https://github.com/beabelalv/devsecopspipeline/blob/main/owasp-scan.shh" '
          sh 'chmod +x owasp-scan.sh'
