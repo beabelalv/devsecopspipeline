@@ -7,7 +7,7 @@ pipeline {
         spec:
           containers:
           - name: python
-            image: python:3-buster
+            image: buildpack-deps:stretch
             command:
             - cat
             tty: true
