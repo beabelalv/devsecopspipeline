@@ -13,17 +13,10 @@ if [ ! -d "$DATA_DIRECTORY" ]; then
     chmod -R 777 "$REPORT_DIRECTORY"
 fi
 
-# Make sure we are using the latest version
-docker pull owasp/dependency-check
+dependency-check --version
 
-docker run --rm \
-    --volume $(pwd):/src \
-    --volume "$DATA_DIRECTORY":/usr/share/dependency-check/data \
-    --volume "$REPORT_DIRECTORY":/report \
-    owasp/dependency-check \
-    --scan /src \
-    --format "ALL" \
-    --project "My OWASP Dependency Check Project" \
-    --out /report
-    # Use suppression like this: (/src == $pwd)
-    # --suppression "/src/security/dependency-check-suppression.xml"
+dependency-check --scan $(pwd) \
+                 --data "$DATA_DIRECTORY" \
+                 --out "$REPORT_DIRECTORY" \
+                 --format "ALL" \
+                 --project "My OWASP Dependency Check Project"
