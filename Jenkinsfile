@@ -29,7 +29,7 @@ pipeline {
       steps {
          container('python') {
           sh 'rm owasp* || true'
-          sh 'wget "https://github.com/beabelalv/devsecopspipeline/blob/main/owasp-scan.sh" '
+          sh 'wget "https://github.com/beabelalv/devsecopspipeline/blob/main/owasp-dependency-check.sh" '
           sh 'chmod +x owasp-scan.sh'
           sh 'bash owasp-dependency-check.sh'
           sh 'cat /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml'
