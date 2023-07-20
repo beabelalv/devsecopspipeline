@@ -27,7 +27,7 @@ pipeline {
 
       stage("OWASP Dependency Check"){
           steps{
-              dependencyCheck additionalArguments: '--scan ./ --format HTML ', odcInstallation: 'DP'
+              dependencyCheck additionalArguments: '--scan ./ --format HTML ', odcInstallation: 'DP-check'
               dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
           }
         }
