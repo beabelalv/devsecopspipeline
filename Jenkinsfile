@@ -25,11 +25,14 @@ pipeline {
       }
     }
 
-    stage('Dependency-Check Analysis') {
-        steps {
-            script {
-                    dependencyCheck additionalArguments: '--scan /path/to/scan', odcInstallation: 'Default'            }
-        }
+    stage ('Source Composition Analysis: DependencyCheck') {
+      steps {
+         sh 'rm owasp* || true'
+         sh 'wget "https://github.com/beabelalv/devsecopspipeline/blob/main/owasp-scan.shh" '
+         sh 'chmod +x owasp-scan.sh'
+         sh 'bash owasp-dependency-check.sh'
+         sh 'cat /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml'
+      }
     }
 
     stage('SonarQube') {
