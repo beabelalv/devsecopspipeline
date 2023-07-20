@@ -7,7 +7,7 @@ pipeline {
         spec:
           containers:
           - name: python
-            image: buildpack-deps:stretch
+            image: beatrizbeltranalv/python-image:latest
             command:
             - cat
             tty: true
