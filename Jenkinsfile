@@ -10,6 +10,7 @@ pipeline {
             image: python:3
             command:
             - cat
+            - wget
             tty: true
         '''
     }
