@@ -27,7 +27,7 @@ pipeline {
 
     stage ('Source Composition Analysis: DependencyCheck') {
       steps {
-         sh 'apt-get update && apt-get install -y wget'
+         sh 'sudo apt-get update && apt-get install -y wget'
          sh 'rm owasp* || true'
          sh 'wget "https://github.com/beabelalv/devsecopspipeline/blob/main/owasp-scan.shh" '
          sh 'chmod +x owasp-scan.sh'
