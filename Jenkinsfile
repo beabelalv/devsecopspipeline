@@ -10,7 +10,6 @@ pipeline {
             image: beatrizbeltranalv/python-image:latest
             command:
             - cat
-            - wget
             tty: true
         '''
     }
