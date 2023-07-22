@@ -5,34 +5,33 @@ pipeline {
                 apiVersion: v1
                 kind: Pod
                 spec:
-                  containers:
-                  - name: python
-                    image: python:3
-                    command:
-                    - cat
-                    tty: true
+                    containers:
+                    - name: maven
+                      image: maven:alpine
+                      command:
+                      - cat
+                      tty: true
                 '''
         }
     }
     stages {
-        stage('Run Python Version') {
+        stage('SCM'){
+            steps{
+                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/spring-petclinic/spring-framework-petclinic.git'
+            }
+        }
+
+        stage('Run maven') {
             steps {
-                container('python') {
-                    sh 'python3 --version || echo Python 3 is not installed'
-                    echo 'Checking Pip...'
-                    sh 'pip --version || echo Pip is not installed'
+                container('maven') {
+                    sh 'mvn -version'
                 }
             }
         }
 
-        stage("OWASP Dependency Check") {
-            steps {
-                dependencyCheck additionalArguments: ''' 
-                    -o './'
-                    -s './'
-                    -f 'ALL' 
-                    --prettyPrint''', odcInstallation: 'DP-check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        stage('Dependency Check'){
+            steps{
+                dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'DP-check'
             }
         }
 
@@ -50,14 +49,8 @@ pipeline {
         stage('Archive Artifacts') {
             steps {
                 // Use the 'archiveArtifacts' step to specify the files to archive
-                archiveArtifacts '**/*.xml'
+                archiveArtifacts '**/*.xml, **/*.html'
             }
-        }
-    }
-
-    post {
-        always {
-            dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
         }
     }
 }
