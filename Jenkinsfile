@@ -46,7 +46,7 @@ pipeline {
 
             }
         }
-  } 
+  
 
     stage('Archive Artifacts') {
             steps {
@@ -55,8 +55,8 @@ pipeline {
             }
         }
     }
+  }
 
-}
   post {
       always {
         dependencyCheckPublisher pattern: '**/dependency-check-report.xml'      
