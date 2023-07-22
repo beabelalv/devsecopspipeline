@@ -48,6 +48,14 @@ pipeline {
         }
   } 
 
+    stage('Archive Artifacts') {
+            steps {
+                // Use the 'archiveArtifacts' step to specify the files to archive
+                archiveArtifacts '**/*.xml'
+            }
+        }
+    }
+
 }
   post {
       always {
