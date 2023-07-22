@@ -17,7 +17,7 @@ pipeline {
     stages {
         stage('SCM'){
             steps{
-                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/spring-petclinic/spring-framework-petclinic.git'
+                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/beabelalv/devsecopspipeline.git'
             }
         }
 
