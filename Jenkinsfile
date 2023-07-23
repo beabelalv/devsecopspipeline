@@ -15,9 +15,28 @@ pipeline {
         }
     }
     stages {
+
+        stage('Plan'){
+            steps{
+                echo 'Plan'
+            }
+        }
+
+        stage('Code'){
+            steps{
+                echo 'Code'
+            }
+        }
+
         stage('SCM'){
             steps{
                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/beabelalv/devsecopspipeline.git'
+            }
+        }
+
+        stage('Build'){
+            steps{
+                echo 'Build'
             }
         }
 
@@ -29,13 +48,19 @@ pipeline {
             }
         }
 
-        stage('Dependency Check'){
+        stage('Test'){
+            steps{
+                echo 'Test'
+            }
+        }
+
+        stage('SCA, Dependency Scan: Dependency Check'){
             steps{
                 dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'DP-check'
             }
         }
 
-        stage('SonarQube') {
+        stage('SCA, Code Quality: SonarQube') {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner1'
@@ -46,11 +71,30 @@ pipeline {
             }
         }
 
+        stage('Release'){
+            steps{
+                echo 'Release'
+            }
+        }
+
         stage('Archive Artifacts') {
             steps {
                 // Use the 'archiveArtifacts' step to specify the files to archive
                 archiveArtifacts '**/*.xml, **/*.html'
             }
         }
+
+        stage('Deploy'){
+            steps{
+                echo 'Deploy'
+            }
+        }
+
+        stage('Operate'){
+            steps{
+                echo 'Operate'
+            }
+        }
+
     }
 }
