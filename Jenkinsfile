@@ -16,15 +16,15 @@ pipeline {
     }
     stages {
 
-        stage('Plan'){
+        stage('[Plan]'){
             steps{
-                echo 'Plan'
+                echo '[Plan]'
             }
         }
 
-        stage('Code'){
+        stage('[Code]'){
             steps{
-                echo 'Code'
+                echo '[Code]'
             }
         }
 
@@ -34,9 +34,9 @@ pipeline {
             }
         }
 
-        stage('Build'){
+        stage('[Build]'){
             steps{
-                echo 'Build'
+                echo '[Build]'
             }
         }
 
@@ -48,9 +48,9 @@ pipeline {
             }
         }
 
-        stage('Test'){
+        stage('[Test]'){
             steps{
-                echo 'Test'
+                echo '[Test]'
             }
         }
 
@@ -71,9 +71,9 @@ pipeline {
             }
         }
 
-        stage('Release'){
+        stage('[Release]'){
             steps{
-                echo 'Release'
+                echo '[Release]'
             }
         }
 
@@ -84,15 +84,15 @@ pipeline {
             }
         }
 
-        stage('Deploy'){
+        stage('[Deploy]'){
             steps{
-                echo 'Deploy'
+                echo '[Deploy]'
             }
         }
 
-        stage('Operate'){
+        stage('[Operate]'){
             steps{
-                echo 'Operate'
+                echo '[Operate]'
             }
         }
 
