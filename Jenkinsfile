@@ -56,7 +56,11 @@ pipeline {
 
         stage('SCA, Dependency Scan: Dependency Check'){
             steps{
-                dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'DP-check'
+                dependencyCheck additionalArguments: '''-o './'
+                    -s './'
+                    -f 'ALL' 
+                    --prettyPrint
+                    --format HTML''', odcInstallation: 'DP-check'
             }
         }
 
