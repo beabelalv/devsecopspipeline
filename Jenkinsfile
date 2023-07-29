@@ -1,27 +1,39 @@
 pipeline {
-    agent {
-        kubernetes {
-            yaml '''
-                apiVersion: v1
-                kind: Pod
-                spec:
-                  containers:
-                  - name: python
-                    image: python:3
-                    command:
-                    - cat
-                    tty: true
-                '''
-        }
-    }
+    agent any
     stages {
-        stage('Run Python Version') {
-            steps {
-                container('python') {
-                    sh 'python3 --version || echo Python 3 is not installed'
-                    echo 'Checking Pip...'
-                    sh 'pip --version || echo Pip is not installed'
+        stage("build") {
+            agent {
+                docker {
+                    image 'python:3.6'
+                    args '-u root'
                 }
+            }
+            steps {
+                sh """
+                pip3 install --user virtualenv
+                python3 -m virtualenv env
+                . env/bin/activate
+                pip3 install -r requirements.txt
+                python3 manage.py check
+                """
+            }
+        }
+
+        stage("test") {
+            agent {
+                docker {
+                    image 'python:3.6'
+                    args '-u root'
+                }
+            }
+            steps {
+                sh """
+                pip3 install --user virtualenv
+                python3 -m virtualenv env
+                . env/bin/activate
+                pip3 install -r requirements.txt
+                python3 manage.py test taskManager
+                """
             }
         }
 
@@ -35,11 +47,11 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Archive Artifacts') {
             steps {
                 // Use the 'archiveArtifacts' step to specify the files to archive
-                archiveArtifacts '**/*.xml'
+                //archiveArtifacts '**/*.xml'
             }
         }
     }
