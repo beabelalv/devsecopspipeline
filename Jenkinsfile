@@ -22,64 +22,64 @@ pipeline {
     
     stages {
 
-        // stage('PREREQUIREMENTS') {
-        //     steps {
-        //         container('python') {
-        //             sh 'python3 --version || echo Python 3 is not installed'
-        //             echo 'Checking Pip...'
-        //             sh 'pip --version || echo Pip is not installed'
-        //         }
-        //     }
-        // }
+        stage('PREREQUIREMENTS') {
+            steps {
+                container('python') {
+                    sh 'python3 --version || echo Python 3 is not installed'
+                    echo 'Checking Pip...'
+                    sh 'pip --version || echo Pip is not installed'
+                }
+            }
+        }
 
-        // stage("[BUILD]") {
-        //     steps {
-        //         container('python') {
-        //             sh """
-        //             pip install --user virtualenv
-        //             python3 -m virtualenv env
-        //             . env/bin/activate
-        //             pip install -r requirements.txt 
-        //             """
-        //             //Lo borro pero iria arriba python3 app.py
-        //         }
-        //     }
-        // }
+        stage("[BUILD]") {
+            steps {
+                container('python') {
+                    sh """
+                    pip install --user virtualenv
+                    python3 -m virtualenv env
+                    . env/bin/activate
+                    pip install -r requirements.txt 
+                    """
+                    //Lo borro pero iria arriba python3 app.py
+                }
+            }
+        }
         
-        // stage('[TEST]'){
-        //     steps{
-        //         echo '[TEST]'
-        //     }
-        // }
+        stage('[TEST]'){
+            steps{
+                echo '[TEST]'
+            }
+        }
 
-        // stage("SCA: Safety") {
-        //     steps {
-        //         container('docker') {
-        //             sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
-        //         }
-        //     }
-        // }
+        stage("SCA: Safety") {
+            steps {
+                container('docker') {
+                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
+                }
+            }
+        }
 
-        // stage('SCA: SonarQube') {
-        //     steps {
-        //         script {
-        //             def scannerHome = tool 'SonarScanner1'
-        //             withSonarQubeEnv {
-        //                 sh "${scannerHome}/bin/sonar-scanner"
-        //             }
-        //         }
-        //     }
-        // }
+        stage('SCA: SonarQube') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner1'
+                    withSonarQubeEnv {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
 
-        // stage("SAST: Trufflehog") {
-        //     steps {
-        //         container('docker') {
-        //             git branch: 'main',
-        //             url: 'https://github.com/beabelalv/devsecopspipeline.git'
-        //             sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
-        //         }
-        //     }
-        // }
+        stage("SAST: Trufflehog") {
+            steps {
+                container('docker') {
+                    git branch: 'main',
+                    url: 'https://github.com/beabelalv/devsecopspipeline.git'
+                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
+                }
+            }
+        }
 
         stage("SAST: Bandit") {
             steps {
