@@ -85,10 +85,7 @@ pipeline {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        sh '''
-                        docker run -v "$(pwd)":/src --rm hysnsec/bandit -r /src -f json -o /src/bandit-output.json
-                        cat bandit-output.json
-                        '''
+                        sh ' docker run -v "$(pwd)":/src --rm hysnsec/bandit -r /src -f json -o /src/bandit-output.json'
                     }
                 }
             }
