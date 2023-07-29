@@ -84,7 +84,7 @@ pipeline {
         stage("SAST: Bandit") {
             steps {
                 container('docker') {
-                    sh "docker run -v \$(pwd):/src --rm hysnsec/bandit -r /src -f json -o /src/bandit-output.json"
+                      sh 'docker run -v "$(pwd)":/src --rm hysnsec/bandit -r /src -f json -o bandit-output.json'
                 }
             }
         }
