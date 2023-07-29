@@ -74,7 +74,9 @@ pipeline {
         stage("SAST: Trufflehog") {
             steps {
                 container('docker') {
-                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog /src --json | tee trufflehog-results.json'
+                    git branch: 'main',
+                    url: 'https://github.com/beabelalv/devsecopspipeline.git'
+                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
                 }
             }
         }
