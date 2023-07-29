@@ -46,37 +46,45 @@ pipeline {
         //     }
         // }
         
-        stage('[TEST]'){
-            steps{
-                echo '[TEST]'
-            }
-        }
+        // stage('[TEST]'){
+        //     steps{
+        //         echo '[TEST]'
+        //     }
+        // }
 
-        stage("SCA: Safety") {
+        // stage("SCA: Safety") {
+        //     steps {
+        //         container('docker') {
+        //             sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
+        //         }
+        //     }
+        // }
+
+        // stage('SCA: SonarQube') {
+        //     steps {
+        //         script {
+        //             def scannerHome = tool 'SonarScanner1'
+        //             withSonarQubeEnv {
+        //                 sh "${scannerHome}/bin/sonar-scanner"
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage("SAST: Trufflehog") {
+        //     steps {
+        //         container('docker') {
+        //             git branch: 'main',
+        //             url: 'https://github.com/beabelalv/devsecopspipeline.git'
+        //             sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
+        //         }
+        //     }
+        // }
+
+        stage("SAST: Bandit") {
             steps {
                 container('docker') {
-                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
-                }
-            }
-        }
-
-        stage('SCA: SonarQube') {
-            steps {
-                script {
-                    def scannerHome = tool 'SonarScanner1'
-                    withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
-            }
-        }
-
-        stage("SAST: Trufflehog") {
-            steps {
-                container('docker') {
-                    git branch: 'main',
-                    url: 'https://github.com/beabelalv/devsecopspipeline.git'
-                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
+                    sh "docker run -v \$(pwd):/src --rm hysnsec/bandit -r /src -f json -o /src/bandit-output.json"
                 }
             }
         }
