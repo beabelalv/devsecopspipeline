@@ -75,7 +75,6 @@ pipeline {
             steps {
                 container('docker') {
                     sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog /src --json > trufflehog-results.json'
-                    archiveArtifacts artifacts: 'trufflehog-results.json'
                 }
             }
         }
@@ -89,6 +88,7 @@ pipeline {
         stage('Archive Artifacts') {
             steps {
                 archiveArtifacts artifacts: 'oast-results.json'
+                archiveArtifacts artifacts: 'trufflehog-results.json'
             }
         }
         
