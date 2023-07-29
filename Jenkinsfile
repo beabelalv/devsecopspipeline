@@ -24,7 +24,7 @@ pipeline {
                 }
             }
         }
-
+        '''
         stage("OWASP Dependency Check") {
             steps {
                 dependencyCheck additionalArguments: ''' 
@@ -35,7 +35,7 @@ pipeline {
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-
+        '''
         stage('SonarQube') {
             steps {
                 script {
@@ -54,10 +54,11 @@ pipeline {
             }
         }
     }
-
+    '''
     post {
         always {
             dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
         }
     }
+    '''
 }
