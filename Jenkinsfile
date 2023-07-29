@@ -29,25 +29,29 @@ pipeline {
 
         stage("build") {
             steps {
-                sh """
-                pip install --user virtualenv
-                python3 -m virtualenv env
-                . env/bin/activate
-                pip install -r requirements.txt
-                python3 manage.py check
-                """
+                container('python') {
+                    sh """
+                    pip install --user virtualenv
+                    python3 -m virtualenv env
+                    . env/bin/activate
+                    pip install -r requirements.txt
+                    python3 manage.py check
+                    """
+                }
             }
         }
 
         stage("test") {
             steps {
-                sh """
-                pip install --user virtualenv
-                python3 -m virtualenv env
-                . env/bin/activate
-                pip install -r requirements.txt
-                python3 manage.py test taskManager
-                """
+                container('python') {
+                    sh """
+                    pip install --user virtualenv
+                    python3 -m virtualenv env
+                    . env/bin/activate
+                    pip install -r requirements.txt
+                    python3 manage.py test taskManager
+                    """
+                }
             }
         }
 
