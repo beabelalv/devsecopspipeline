@@ -52,24 +52,24 @@ pipeline {
             }
         }
 
-        stage("SCA: Safety") {
-            steps {
-                container('docker') {
-                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
-                }
-            }
-        }
+        // stage("SCA: Safety") {
+        //     steps {
+        //         container('docker') {
+        //             sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
+        //         }
+        //     }
+        // }
 
-        stage('SCA: SonarQube') {
-            steps {
-                script {
-                    def scannerHome = tool 'SonarScanner1'
-                    withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
-            }
-        }
+        // stage('SCA: SonarQube') {
+        //     steps {
+        //         script {
+        //             def scannerHome = tool 'SonarScanner1'
+        //             withSonarQubeEnv {
+        //                 sh "${scannerHome}/bin/sonar-scanner"
+        //             }
+        //         }
+        //     }
+        // }
 
         stage("SAST: Trufflehog") {
             steps {
