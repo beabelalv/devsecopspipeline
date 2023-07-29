@@ -24,18 +24,7 @@ pipeline {
                 }
             }
         }
-        '''
-        stage("OWASP Dependency Check") {
-            steps {
-                dependencyCheck additionalArguments: ''' 
-                    -o './'
-                    -s './'
-                    -f 'ALL' 
-                    --prettyPrint''', odcInstallation: 'DP-check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        '''
+
         stage('SonarQube') {
             steps {
                 script {
@@ -54,11 +43,5 @@ pipeline {
             }
         }
     }
-    '''
-    post {
-        always {
-            dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-        }
-    }
-    '''
+
 }
