@@ -74,7 +74,8 @@ pipeline {
         stage("SAST: Trufflehog") {
             steps {
                 container('docker') {
-                    sh "docker run -v /home/jenkins/agent/workspace/Python Pipeline:/src --rm hysnsec/trufflehog /src --json" 
+                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog /src --json > trufflehog-results.json'
+                    archiveArtifacts artifacts: 'trufflehog-results.json'
                 }
             }
         }
