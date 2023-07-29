@@ -3,6 +3,6 @@ flask==2.2.2
 flask-sqlalchemy==3.0.3
 jsonschema==4.17.3
 sqlalchemy==2.0.2
-swagger-ui-bundle==5.0.0
+swagger-ui-bundle==5.1.0
 PyJWT==2.6.0
 markupsafe==2.1.2
