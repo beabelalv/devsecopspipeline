@@ -16,13 +16,24 @@ pipeline {
     }  
     
     stages {
+
+        stage('Run Python Version') {
+            steps {
+                container('python') {
+                    sh 'python3 --version || echo Python 3 is not installed'
+                    echo 'Checking Pip...'
+                    sh 'pip --version || echo Pip is not installed'
+                }
+            }
+        }
+
         stage("build") {
             steps {
                 sh """
-                pip3 install --user virtualenv
+                pip install --user virtualenv
                 python3 -m virtualenv env
                 . env/bin/activate
-                pip3 install -r requirements.txt
+                pip install -r requirements.txt
                 python3 manage.py check
                 """
             }
@@ -31,10 +42,10 @@ pipeline {
         stage("test") {
             steps {
                 sh """
-                pip3 install --user virtualenv
+                pip install --user virtualenv
                 python3 -m virtualenv env
                 . env/bin/activate
-                pip3 install -r requirements.txt
+                pip install -r requirements.txt
                 python3 manage.py test taskManager
                 """
             }
