@@ -49,8 +49,8 @@ pipeline {
         stage("oast") {
             steps {
                 container('docker') {
-                    sh "docker run -v .:/src --rm hysnsec/safety check -r requirements.txt --json > oast-results.json"
-                    archiveArtifacts artifacts: 'oast-results.json', fingerprint: true
+                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
+                    archiveArtifacts artifacts: 'oast-results.json'
                 }
             }
         }
