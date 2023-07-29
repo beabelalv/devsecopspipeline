@@ -22,29 +22,29 @@ pipeline {
     
     stages {
 
-        stage('PREREQUIREMENTS') {
-            steps {
-                container('python') {
-                    sh 'python3 --version || echo Python 3 is not installed'
-                    echo 'Checking Pip...'
-                    sh 'pip --version || echo Pip is not installed'
-                }
-            }
-        }
+        // stage('PREREQUIREMENTS') {
+        //     steps {
+        //         container('python') {
+        //             sh 'python3 --version || echo Python 3 is not installed'
+        //             echo 'Checking Pip...'
+        //             sh 'pip --version || echo Pip is not installed'
+        //         }
+        //     }
+        // }
 
-        stage("[BUILD]") {
-            steps {
-                container('python') {
-                    sh """
-                    pip install --user virtualenv
-                    python3 -m virtualenv env
-                    . env/bin/activate
-                    pip install -r requirements.txt 
-                    """
-                    //Lo borro pero iria arriba python3 app.py
-                }
-            }
-        }
+        // stage("[BUILD]") {
+        //     steps {
+        //         container('python') {
+        //             sh """
+        //             pip install --user virtualenv
+        //             python3 -m virtualenv env
+        //             . env/bin/activate
+        //             pip install -r requirements.txt 
+        //             """
+        //             //Lo borro pero iria arriba python3 app.py
+        //         }
+        //     }
+        // }
         
         stage('[TEST]'){
             steps{
