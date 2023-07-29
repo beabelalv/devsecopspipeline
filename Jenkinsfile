@@ -73,7 +73,9 @@ pipeline {
 
         stage("SAST: Trufflehog") {
             steps {
-                sh "docker run -v \$(pwd):/src --rm hysnsec/trufflehog file:///src --json" 
+                container('docker') {
+                    sh "docker run -v \$(pwd):/src --rm hysnsec/trufflehog file:///src --json" 
+                }
             }
         }
 
