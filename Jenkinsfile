@@ -87,7 +87,7 @@ pipeline {
 
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: 'oast-results.json'
+                //archiveArtifacts artifacts: 'oast-results.json'
                 archiveArtifacts artifacts: 'trufflehog-results.json'
             }
         }
