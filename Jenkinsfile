@@ -87,13 +87,13 @@ pipeline {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        sh ' docker run -v "$(pwd)":/src --rm hysnsec/bandit -r /src -f json -o /src/bandit-output.json'
+                        sh ' docker run -v "$(pwd)":/src --rm hysnsec/bandit -r /src -f json -o /src/bandit-results.json'
                     }
                 }
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'bandit-output.json', fingerprint: true
+                    archiveArtifacts artifacts: 'bandit-results.json', fingerprint: true
                 }
             }
         }
@@ -106,7 +106,7 @@ pipeline {
 
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: '**/*.json', fingerprint: true
+                archiveArtifacts artifacts: '**/*results.json', fingerprint: true
             }
         }
         
