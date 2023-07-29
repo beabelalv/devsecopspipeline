@@ -89,6 +89,11 @@ pipeline {
                     }
                 }
             }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'bandit-output.json', fingerprint: true
+                }
+            }
         }
 
         stage('[Release]'){
