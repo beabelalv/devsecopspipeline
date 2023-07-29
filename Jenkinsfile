@@ -1,13 +1,22 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            yaml '''
+                apiVersion: v1
+                kind: Pod
+                spec:
+                  containers:
+                  - name: python
+                    image: python:3
+                    command:
+                    - cat
+                    tty: true
+                '''
+        }
+    }  
+    
     stages {
         stage("build") {
-            agent {
-                docker {
-                    image 'python:3.6'
-                    args '-u root'
-                }
-            }
             steps {
                 sh """
                 pip3 install --user virtualenv
@@ -20,12 +29,6 @@ pipeline {
         }
 
         stage("test") {
-            agent {
-                docker {
-                    image 'python:3.6'
-                    args '-u root'
-                }
-            }
             steps {
                 sh """
                 pip3 install --user virtualenv
