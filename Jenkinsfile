@@ -22,7 +22,7 @@ pipeline {
     
     stages {
 
-        stage('Run Python Version') {
+        stage('PREREQUIREMENTS') {
             steps {
                 container('python') {
                     sh 'python3 --version || echo Python 3 is not installed'
@@ -32,7 +32,7 @@ pipeline {
             }
         }
 
-        stage("build") {
+        stage("[BUILD]") {
             steps {
                 container('python') {
                     sh """
@@ -45,17 +45,22 @@ pipeline {
                 }
             }
         }
+        
+        stage('[TEST]'){
+            steps{
+                echo '[TEST]'
+            }
+        }
 
-        stage("oast") {
+        stage("SCA: Safety") {
             steps {
                 container('docker') {
                     sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
-                    archiveArtifacts artifacts: 'oast-results.json'
                 }
             }
         }
 
-        stage('SonarQube') {
+        stage('SCA: SonarQube') {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner1'
@@ -66,7 +71,17 @@ pipeline {
             }
         }
 
-        
+        stage('[Release]'){
+            steps{
+                echo '[Release]'
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'oast-results.json'
+            }
+        }
         
 
     }
