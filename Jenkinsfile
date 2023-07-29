@@ -11,6 +11,11 @@ pipeline {
                     command:
                     - cat
                     tty: true
+                  - name: docker
+                    image: docker:dind
+                    securityContext:
+                      privileged: true
+                    tty: true
                 '''
         }
     }  
@@ -34,23 +39,26 @@ pipeline {
                     pip install --user virtualenv
                     python3 -m virtualenv env
                     . env/bin/activate
-                    pip install -r requirements.txt
-                    python3 app.py
+                    pip install -r requirements.txt 
                     """
+                    //Lo borro pero iria arriba python3 app.py
                 }
             }
         }
 
-        stage("test") {
+        stage("oast") {
             steps {
-                container('python') {
-                    sh """
-                    pip install --user virtualenv
-                    python3 -m virtualenv env
-                    . env/bin/activate
-                    pip install -r requirements.txt
-                    python3 manage.py test taskManager
-                    """
+                container('dcoker') {
+                sh "docker run -v \$(pwd):/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json"
+                }
+            }
+        }
+        
+        stage("integration") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    echo "This is an integration step."
+                    sh "exit 1"
                 }
             }
         }
@@ -65,6 +73,8 @@ pipeline {
                 }
             }
         }
+
+        
         
 
     }
