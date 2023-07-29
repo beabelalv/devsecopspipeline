@@ -71,6 +71,12 @@ pipeline {
             }
         }
 
+        stage("SAST: Trufflehog") {
+            steps {
+                sh "docker run -v \$(pwd):/src --rm hysnsec/trufflehog file:///src --json" 
+            }
+        }
+
         stage('[Release]'){
             steps{
                 echo '[Release]'
