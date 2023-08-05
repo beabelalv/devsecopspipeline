@@ -111,7 +111,8 @@ pipeline {
             steps {
                 container('python') {
                     sh """
-                    . . env/bin/activate
+                    echo "Activating virtual environment:"
+                    . env/bin/activate
                     echo "Current working directory:"
                     pwd
                     echo "Listing bandit directory:"
