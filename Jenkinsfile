@@ -69,7 +69,7 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarScanner1'
                     withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner"
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi"
                     }
                 }
             }
