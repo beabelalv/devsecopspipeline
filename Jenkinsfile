@@ -111,8 +111,13 @@ pipeline {
             steps {
                 container('python') {
                     sh """
-                    . env/bin/activate
-                    python bandit/html_generator.py bandit-results.json
+                    . . env/bin/activate
+                    echo "Current working directory:"
+                    pwd
+                    echo "Listing bandit directory:"
+                    ls -l bandit
+                    echo "Trying to run the script:"
+                    python bandit/html_generator.py reports/bandit-results.json
                     """
                 }
             }
