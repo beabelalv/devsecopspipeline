@@ -18,11 +18,24 @@ pipeline {
                     tty: true
                 '''
         }
-    }  
+   parameters {
+        booleanParam(defaultValue: true, description: 'Enable/Disable PREREQUIREMENTS stage', name: 'PREREQUIREMENTS_ENABLED')
+        booleanParam(defaultValue: false, description: 'Enable/Disable [BUILD] stage', name: 'BUILD_ENABLED')
+        booleanParam(defaultValue: false, description: 'Enable/Disable [TEST] stage', name: 'TEST_ENABLED')
+        booleanParam(defaultValue: false, description: 'Enable/Disable SCA: Safety stage', name: 'SCA_Safety_ENABLED')
+        booleanParam(defaultValue: false, description: 'Enable/Disable SCA: SonarQube stage', name: 'SCA_SonarQube_ENABLED')
+        booleanParam(defaultValue: false, description: 'Enable/Disable SAST: Trufflehog stage', name: 'SAST_Trufflehog_ENABLED')
+        booleanParam(defaultValue: true, description: 'Enable/Disable SAST: Bandit stage', name: 'SAST_Bandit_ENABLED')
+        booleanParam(defaultValue: true, description: 'Enable/Disable Report Generation: Bandit stage', name: 'Report_Generation_Bandit_ENABLED')
+        booleanParam(defaultValue: true, description: 'Enable/Disable [Release] stage', name: 'Release_ENABLED')
+        booleanParam(defaultValue: true, description: 'Enable/Disable Archive Artifacts stage', name: 'Archive_Artifacts_ENABLED')
+    }
+ }  
     
     stages {
 
         stage('PREREQUIREMENTS') {
+            when { expression { params.PREREQUIREMENTS_ENABLED } } {
             steps {
                 container('python') {
                     echo 'Cloning reports library'
@@ -32,11 +45,15 @@ pipeline {
                     sh 'python3 --version || echo Python 3 is not installed'
                     echo 'Checking Pip...'
                     sh 'pip --version || echo Pip is not installed'
+
+                    sh 'pwd' // prints current working directory
+                    sh 'ls -R' // prints directory structure
                 }
             }
         }
 
-        stage("[BUILD]") {
+        stage('[BUILD]') {
+            when { expression { params.BUILD_ENABLED } } {
             steps {
                 container('python') {
                     sh """
@@ -50,13 +67,15 @@ pipeline {
             }
         }
         
-        stage('[TEST]'){
+        stage('[TEST]') {
+            when { expression { params.TEST_ENABLED } }{
             steps{
                 echo '[TEST]'
             }
         }
 
-        stage("SCA: Safety") {
+        stage('SCA: Safety') {
+            when { expression { params.SCA_Safety_ENABLED } } {
             steps {
                 container('docker') {
                     sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
@@ -65,17 +84,19 @@ pipeline {
         }
 
         stage('SCA: SonarQube') {
+            when { expression { params.SCA_SonarQube_ENABLED } } {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner1'
                     withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi"
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi -Dsonar.exclusions=**/devsecopslibrary/TFM/**/*"
                     }
                 }
             }
         }
 
-        stage("SAST: Trufflehog") {
+        stage('SAST: Trufflehog') {
+            when { expression { params.SAST_Trufflehog_ENABLED } } {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -86,8 +107,10 @@ pipeline {
                 }
             }
         }
+        
 
-        stage("SAST: Bandit") {
+        stage('SAST: Bandit') {
+            when { expression { params.SAST_Bandit_ENABLED } } {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -101,8 +124,10 @@ pipeline {
                 }
             }
         }
+        
 
-        stage("Report Generation: Bandit") {
+        stage('Report Generation: Bandit') {
+            when { expression { params.Report_Generation_Bandit_ENABLED } } {
             steps {
                 container('python') {
                     sh """
@@ -118,13 +143,15 @@ pipeline {
             }
         }
 
-        stage('[Release]'){
+        stage('[Release]') {
+            when { expression { params.Release_ENABLED } }{
             steps{
                 echo '[Release]'
             }
         }
 
         stage('Archive Artifacts') {
+            when { expression { params.Archive_Artifacts_ENABLED } } {
             steps {
                 archiveArtifacts artifacts: '**/*results.json', fingerprint: true
             }
