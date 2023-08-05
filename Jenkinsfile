@@ -25,6 +25,10 @@ pipeline {
         stage('PREREQUIREMENTS') {
             steps {
                 container('python') {
+                    echo 'Cloning reports library'
+                    git branch: 'main',
+                    url: 'https://github.com/beabelalv/devsecopslibrary.git'
+
                     sh 'python3 --version || echo Python 3 is not installed'
                     echo 'Checking Pip...'
                     sh 'pip --version || echo Pip is not installed'
@@ -94,6 +98,22 @@ pipeline {
             post {
                 always {
                     archiveArtifacts artifacts: 'bandit-results.json', fingerprint: true
+                }
+            }
+        }
+
+        stage("Report Generation: Bandit") {
+            steps {
+                container('python') {
+                    sh """
+                    . env/bin/activate
+                    python devsecopslibrary/bandit/html_generator.py bandit-results.json
+                    """
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'bandit-report.html', fingerprint: true
                 }
             }
         }
