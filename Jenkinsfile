@@ -72,7 +72,7 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarScanner1'
                     withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi -Dsonar.exclusions=**/devsecopslibrary/TFM/**/*"
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi -Dsonar.exclusions=TFM/**/*"
                     }
                 }
             }
@@ -95,7 +95,7 @@ pipeline {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        sh ' docker run -v "$(pwd)":/src --rm hysnsec/bandit -r /src -f json -o /src/bandit-results.json'
+                        sh ' docker run -v "$(pwd)":/src --rm hysnsec/bandit -r /src --exclude TFM -f json -o /src/bandit-results.json'                    
                     }
                 }
             }
@@ -112,7 +112,7 @@ pipeline {
                 container('python') {
                     sh """
                     . env/bin/activate
-                    python devsecopslibrary/bandit/html_generator.py bandit-results.json
+                    python bandit/html_generator.py bandit-results.json
                     """
                 }
             }
