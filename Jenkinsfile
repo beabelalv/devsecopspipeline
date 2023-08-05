@@ -18,24 +18,11 @@ pipeline {
                     tty: true
                 '''
         }
-   parameters {
-        booleanParam(defaultValue: true, description: 'Enable/Disable PREREQUIREMENTS stage', name: 'PREREQUIREMENTS_ENABLED')
-        booleanParam(defaultValue: false, description: 'Enable/Disable [BUILD] stage', name: 'BUILD_ENABLED')
-        booleanParam(defaultValue: false, description: 'Enable/Disable [TEST] stage', name: 'TEST_ENABLED')
-        booleanParam(defaultValue: false, description: 'Enable/Disable SCA: Safety stage', name: 'SCA_Safety_ENABLED')
-        booleanParam(defaultValue: false, description: 'Enable/Disable SCA: SonarQube stage', name: 'SCA_SonarQube_ENABLED')
-        booleanParam(defaultValue: false, description: 'Enable/Disable SAST: Trufflehog stage', name: 'SAST_Trufflehog_ENABLED')
-        booleanParam(defaultValue: true, description: 'Enable/Disable SAST: Bandit stage', name: 'SAST_Bandit_ENABLED')
-        booleanParam(defaultValue: true, description: 'Enable/Disable Report Generation: Bandit stage', name: 'Report_Generation_Bandit_ENABLED')
-        booleanParam(defaultValue: true, description: 'Enable/Disable [Release] stage', name: 'Release_ENABLED')
-        booleanParam(defaultValue: true, description: 'Enable/Disable Archive Artifacts stage', name: 'Archive_Artifacts_ENABLED')
-    }
- }  
+    }  
     
     stages {
 
         stage('PREREQUIREMENTS') {
-            when { expression { params.PREREQUIREMENTS_ENABLED } } {
             steps {
                 container('python') {
                     echo 'Cloning reports library'
@@ -52,8 +39,7 @@ pipeline {
             }
         }
 
-        stage('[BUILD]') {
-            when { expression { params.BUILD_ENABLED } } {
+        stage("[BUILD]") {
             steps {
                 container('python') {
                     sh """
@@ -67,15 +53,13 @@ pipeline {
             }
         }
         
-        stage('[TEST]') {
-            when { expression { params.TEST_ENABLED } }{
+        stage('[TEST]'){
             steps{
                 echo '[TEST]'
             }
         }
 
-        stage('SCA: Safety') {
-            when { expression { params.SCA_Safety_ENABLED } } {
+        stage("SCA: Safety") {
             steps {
                 container('docker') {
                     sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
@@ -84,7 +68,6 @@ pipeline {
         }
 
         stage('SCA: SonarQube') {
-            when { expression { params.SCA_SonarQube_ENABLED } } {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner1'
@@ -95,8 +78,7 @@ pipeline {
             }
         }
 
-        stage('SAST: Trufflehog') {
-            when { expression { params.SAST_Trufflehog_ENABLED } } {
+        stage("SAST: Trufflehog") {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -109,8 +91,7 @@ pipeline {
         }
         
 
-        stage('SAST: Bandit') {
-            when { expression { params.SAST_Bandit_ENABLED } } {
+        stage("SAST: Bandit") {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -126,8 +107,7 @@ pipeline {
         }
         
 
-        stage('Report Generation: Bandit') {
-            when { expression { params.Report_Generation_Bandit_ENABLED } } {
+        stage("Report Generation: Bandit") {
             steps {
                 container('python') {
                     sh """
@@ -143,15 +123,13 @@ pipeline {
             }
         }
 
-        stage('[Release]') {
-            when { expression { params.Release_ENABLED } }{
+        stage('[Release]'){
             steps{
                 echo '[Release]'
             }
         }
 
         stage('Archive Artifacts') {
-            when { expression { params.Archive_Artifacts_ENABLED } } {
             steps {
                 archiveArtifacts artifacts: '**/*results.json', fingerprint: true
             }
