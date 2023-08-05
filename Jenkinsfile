@@ -106,7 +106,7 @@ pipeline {
             }
         }
         
-
+        /*
         stage("Report Generation: Bandit") {
             steps {
                 container('python') {
@@ -128,7 +128,7 @@ pipeline {
                 }
             }
         }
-
+        */
         stage('[Release]'){
             steps{
                 echo '[Release]'
