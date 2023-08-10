@@ -107,12 +107,11 @@ pipeline {
         stage('Setup Virtual Environment') {
             steps {
                 container('python') {
-                    script { // Adding this script block
-                        def requirementsPath = libraryResource('requirements.txt')
-                        sh "cp ${requirementsPath} ."
-                    }
                     sh 'python3 -m venv venv'
                     sh 'source venv/bin/activate'
+                    // Retrieve requirements.txt from shared library and copy to current workspace
+                    def requirementsPath = libraryResource('requirements.txt')
+                    sh "cp ${requirementsPath} ."
                     // Install packages from requirements.txt
                     sh 'pip install -r requirements.txt'
                 }
