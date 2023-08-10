@@ -108,7 +108,7 @@ pipeline {
             steps {
                 container('python') {
                     sh 'python3 -m venv venv'
-                    sh 'source venv/bin/activate'
+                    sh '. venv/bin/activate'
                     script {
                         // Retrieve requirements.txt from shared library and copy to current workspace
                         def requirementsPath = libraryResource('requirements.txt')
