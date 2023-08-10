@@ -108,7 +108,7 @@ pipeline {
             steps {
                 container('python') {
                     script { // Adding this script block
-                        def requirementsPath = libraryResource('resources/requirements.txt')
+                        def requirementsPath = libraryResource('requirements.txt')
                         sh "cp ${requirementsPath} ."
                     }
                     sh 'python3 -m venv venv'
