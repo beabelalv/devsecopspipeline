@@ -99,7 +99,7 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'bandit-results.json', fingerprint: true
+                    stash includes: 'bandit-results.json', name: 'bandit-results'
                 }
             }
         }
@@ -129,7 +129,8 @@ pipeline {
                     script {
                         echo "Activating virtual environment:"
                         sh '. venv/bin/activate'
-                        generateBanditReport()
+                        unstash 'bandit-results' // This line retrieves the stashed file
+                        generateBanditReport('bandit-results.json')
                     }
                 }
             }
