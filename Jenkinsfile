@@ -93,9 +93,7 @@ pipeline {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        sh ' docker run -v "$(pwd)":/src --rm hysnsec/bandit -r /src --exclude TFM -f json -o /src/bandit-results.json'   
-                        sh 'chown 1000:1000 /src/bandit-results.json'                 
-                    }
+                        sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/bandit -r /src --exclude TFM -f json -o /src/bandit-results.json'                    }
                 }
             }
             post {
