@@ -112,6 +112,7 @@ pipeline {
                     script {
                         // Retrieve requirements.txt from shared library and copy to current workspace
                         def requirementsPath = libraryResource('requirements.txt')
+                        echo "Requirements Path: ${requirementsPath}" // Debug line
                         sh "cp ${requirementsPath} ."
                     }
                     // Install packages from requirements.txt
