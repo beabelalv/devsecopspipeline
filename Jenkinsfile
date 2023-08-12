@@ -128,7 +128,7 @@ pipeline {
                 container('python') {
                     sh """
                     echo "Activating virtual environment:"
-                    . env/bin/activate
+                    . venv/bin/activate
                     echo "Current working directory:"
                     pwd
                     echo "Listing bandit directory:"
