@@ -131,8 +131,8 @@ pipeline {
                     . venv/bin/activate
                     echo "Current working directory:"
                     pwd
-                    echo "Listing bandit directory:"
-                    ls -l resources/bandit
+                    echo "Listing directories:"
+                    ls -l
                     echo "Trying to run the script:"
                     python resources/bandit/html_generator.py reports/bandit-results.json
                     """
