@@ -129,7 +129,7 @@ pipeline {
                     script {
                         echo "Activating virtual environment:"
                         sh '. venv/bin/activate'
-                        generateBanditReport()
+                         runPythonScript.generateBanditReport()
                     }
                 }
             }
