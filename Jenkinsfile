@@ -129,7 +129,9 @@ pipeline {
                     script {
                         echo "Activating virtual environment:"
                         sh '. venv/bin/activate'
+                        sh 'ls -l /path/to/your/directory'
                         unstash 'bandit-results' // This line retrieves the stashed file
+                        sh 'ls -l /path/to/your/directory'
                         generateBanditReport('bandit-results.json')
                     }
                 }
