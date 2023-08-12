@@ -126,11 +126,11 @@ pipeline {
         stage("Report Generation: Bandit") {
             steps {
                 container('python') {
-                    sh """
-                    echo "Activating virtual environment:"
-                    . venv/bin/activate
-                    generateBanditReport()
-                    """
+                    script {
+                        echo "Activating virtual environment:"
+                        sh '. venv/bin/activate'
+                        generateBanditReport()
+                    }
                 }
             }
             post {
