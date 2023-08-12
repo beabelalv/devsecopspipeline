@@ -110,13 +110,15 @@ pipeline {
                     sh 'python3 -m venv venv'
                     sh '. venv/bin/activate'
                     script {
-                        // Retrieve requirements.txt from shared library and copy to current workspace
-                        def requirementsPath = libraryResource('requirements.txt')
-                        echo "Requirements Path: ${requirementsPath}" // Debug line
-                        sh "cp ${requirementsPath} ."
+                        // Retrieve requirements.txt from shared library
+                        def requirementsContent = libraryResource('requirements.txt')
+                        
+                        // Write the requirements to a new file in the workspace
+                        writeFile file: 'requirements.txt', text: requirementsContent
+                        
+                        // Continue with your pipeline...
+                        sh 'pip install -r requirements.txt'
                     }
-                    // Install packages from requirements.txt
-                    sh 'pip install -r requirements.txt'
                 }
             }
         }
