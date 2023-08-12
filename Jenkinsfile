@@ -132,9 +132,9 @@ pipeline {
                     echo "Current working directory:"
                     pwd
                     echo "Listing bandit directory:"
-                    ls -l bandit
+                    ls -l resources/bandit
                     echo "Trying to run the script:"
-                    python bandit/html_generator.py reports/bandit-results.json
+                    python resources/bandit/html_generator.py reports/bandit-results.json
                     """
                 }
             }
