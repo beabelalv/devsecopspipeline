@@ -132,7 +132,7 @@ pipeline {
                         unstash 'bandit-results' // This line retrieves the stashed file
                         sh 'ls -l'
                         echo "Workspace directory is: ${env.WORKSPACE}"
-                        generateBanditReport('bandit-results.json')
+                        generateBanditReport(json: 'bandit-results.json')
                     }
                 }
             }
