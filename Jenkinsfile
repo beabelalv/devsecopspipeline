@@ -140,7 +140,7 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'bandit-report.html', fingerprint: true
+                    archiveArtifacts artifacts: 'bandit/bandit-report.html', fingerprint: true
                 }
             }
         }
