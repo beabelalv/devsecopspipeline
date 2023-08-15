@@ -76,24 +76,17 @@ pipeline {
         //     }
         // }
 
-            stage('SCA: Trufflehog') {
-                steps {
-                    container('docker') {
-                        script {
-                            // Run trufflehog directly, outputting the results to a file in the Jenkins workspace
-                            sh '''
-                            docker run --rm hysnsec/trufflehog file:///src --json > trufflehog-results.json
-                            '''
-                            stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
-                        }
-                    }
-                }
-                post {
-                    always {
-                        archiveArtifacts artifacts: 'trufflehog-results.json', allowEmptyArchive: true
+        stage("SAST: Trufflehog") {
+            steps {
+                container('docker') {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                        git branch: 'main',
+                        url: 'https://github.com/beabelalv/devsecopspipeline.git'
+                        sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee /src/trufflehog-results.json'
                     }
                 }
             }
+        }
 
         
 
