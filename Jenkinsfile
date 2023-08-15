@@ -89,14 +89,13 @@ pipeline {
                                 sh "mkdir -p ${tempDir}"
                                 
                                 // Run the scan in the temporary directory
-                                sh 'docker run --user 1000:1000 -v "$(pwd)":/src -v "' + tempDir + ':' + tempDir + '" --rm hysnsec/trufflehog file:///src --json | tee ' + tempDir + '/trufflehog-results.json'
+                                sh 'docker run -v "$(pwd)":/src -v "' + tempDir + ':' + tempDir + '" --rm hysnsec/trufflehog file:///src --json | tee ' + tempDir + '/trufflehog-results.json'
                                 
                                 // Copy the results file to Jenkins workspace
                                 sh "cp ${tempDir}/trufflehog-results.json ."
                                 
-                                // Adjust permissions and ownership
+                                // Adjust permissions
                                 sh 'chmod 666 trufflehog-results.json'
-                                sh 'chown jenkins:jenkins trufflehog-results.json'
                                 
                                 // Debug: Check file ownership and permissions
                                 sh 'ls -l trufflehog-results.json'
