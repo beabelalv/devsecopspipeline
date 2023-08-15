@@ -83,6 +83,12 @@ pipeline {
                             git branch: 'python',
                             url: 'https://github.com/beabelalv/devsecopspipeline.git'
                             sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
+                            
+                            // Adjust permissions
+                            sh 'chmod 666 trufflehog-results.json'
+                            
+                            // Debug: Check file ownership and permissions
+                            sh 'ls -l trufflehog-results.json'
                         }
                     }
                 }
@@ -92,6 +98,7 @@ pipeline {
                     }
                 }
             }
+
         
 
         stage("SAST: Bandit") {
