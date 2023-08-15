@@ -82,7 +82,9 @@ pipeline {
                         script {
                             def tempDir = "/tmp/trufflehog_scan"
                             sh 'mkdir -p ' + tempDir
-                            sh 'docker run -v "$(pwd)":/src -v "' + tempDir + ':' + tempDir + '" --rm hysnsec/trufflehog file:///src --json | tee ' + tempDir + '/trufflehog-results.json && chmod 666 ' + tempDir + '/trufflehog-results.json'
+                            def jenkinsUID = sh(script: 'id -u', returnStdout: true).trim()
+                            def jenkinsGID = sh(script: 'id -g', returnStdout: true).trim()
+                            sh 'docker run --user ' + jenkinsUID + ':' + jenkinsGID + ' -v "$(pwd)":/src -v "' + tempDir + ':' + tempDir + '" --rm hysnsec/trufflehog file:///src --json > ' + tempDir + '/trufflehog-results.json'
                             sh 'cp ' + tempDir + '/trufflehog-results.json .'
                         }
                     }
