@@ -151,6 +151,27 @@ pipeline {
             }
         }
 
+        stage("Report Generation: Safety") {
+            steps {
+                container('python') {
+                    script {
+                        echo "Activating virtual environment:"
+                        sh '. venv/bin/activate'
+                        unstash 'safety-results' // Retrieve the stashed Trufflehog results file
+                        echo "Workspace directory is: ${env.WORKSPACE}"
+
+                        // Call the generateSafetyReport method with the path to the JSON file
+                        generateSafetyReport(json: 'safety-results.json')
+                    }
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'safety/safety-report.html', fingerprint: true
+                }
+            }
+        }
+
         stage("Report Generation: Trufflehog") {
             steps {
                 container('python') {
