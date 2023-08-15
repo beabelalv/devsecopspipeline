@@ -86,6 +86,11 @@ pipeline {
                     }
                 }
             }
+            post {
+                always {
+                    stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
+                }
+            }
         }
         
 
@@ -118,6 +123,27 @@ pipeline {
                         // Continue with your pipeline...
                         sh 'pip install -r requirements.txt'
                     }
+                }
+            }
+        }
+
+        stage("Report Generation: Trufflehog") {
+            steps {
+                container('python') {
+                    script {
+                        echo "Activating virtual environment:"
+                        sh '. venv/bin/activate'
+                        unstash 'trufflehog-results' // Retrieve the stashed Trufflehog results file
+                        echo "Workspace directory is: ${env.WORKSPACE}"
+
+                        // Call the generateTrufflehogReport method with the path to the JSON file
+                        generateTrufflehogReport(json: 'trufflehog-results.json')
+                    }
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'trufflehog/trufflehog-report.html', fingerprint: true
                 }
             }
         }
