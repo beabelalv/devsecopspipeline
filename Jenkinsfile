@@ -83,14 +83,10 @@ pipeline {
                             git branch: 'main',
                             url: 'https://github.com/beabelalv/devsecopspipeline.git'
                             
-                            // Execute trufflehog and write to file
-                            sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee /src/trufflehog-results.json'
+                            // Create the file first
+                            sh 'touch trufflehog-results.json'
                             
-                            // Check if the file exists
-                            sh 'ls -l /src/trufflehog-results.json || echo "trufflehog-results.json not found!"'
-                            
-                            // Print the current working directory
-                            sh 'pwd'
+                            sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
                         }
                     }
                 }
