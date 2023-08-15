@@ -76,22 +76,30 @@ pipeline {
         //     }
         // }
 
-        stage("SAST: Trufflehog") {
-            steps {
-                container('docker') {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        git branch: 'main',
-                        url: 'https://github.com/beabelalv/devsecopspipeline.git'
-                        sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee /src/trufflehog-results.json'
+            stage("SAST: Trufflehog") {
+                steps {
+                    container('docker') {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                            git branch: 'main',
+                            url: 'https://github.com/beabelalv/devsecopspipeline.git'
+                            
+                            // Execute trufflehog and write to file
+                            sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee /src/trufflehog-results.json'
+                            
+                            // Check if the file exists
+                            sh 'ls -l /src/trufflehog-results.json || echo "trufflehog-results.json not found!"'
+                            
+                            // Print the current working directory
+                            sh 'pwd'
+                        }
+                    }
+                }
+                post {
+                    always {
+                        stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
                     }
                 }
             }
-            post {
-                always {
-                    stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
-                }
-            }
-        }
 
         
 
