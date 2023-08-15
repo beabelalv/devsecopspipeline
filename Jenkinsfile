@@ -86,6 +86,11 @@ pipeline {
                     }
                 }
             }
+            post {
+                always {
+                    stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
+                }
+            }
         }
 
         
