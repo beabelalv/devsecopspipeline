@@ -51,19 +51,29 @@ pipeline {
         //     }
         // }
         
-        // stage('[TEST]'){
-        //     steps{
-        //         echo '[TEST]'
-        //     }
-        // }
+        stage('[TEST]'){
+            steps{
+                echo '[TEST]'
+            }
+        }
 
-        // stage("SCA: Safety") {
-        //     steps {
-        //         container('docker') {
-        //             sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
-        //         }
-        //     }
-        // }
+        stage("SCA: Safety") {
+            steps {
+                container('docker') {
+                    sh '''
+                            touch oast-results.json
+                            chown 1000:1000 oast-results.json
+                            '''
+
+                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
+                }
+            }
+            post {
+                always {
+                    stash includes: 'oast-results.json', name: 'oast-results'
+                }
+            }
+        }
 
         // stage('SCA: SonarQube') {
         //     steps {
@@ -113,6 +123,12 @@ pipeline {
                 always {
                     stash includes: 'bandit-results.json', name: 'bandit-results'
                 }
+            }
+        }
+
+        stage('[REPORTS CREATION]'){
+            steps{
+                echo '[REPORTS CREATION]'
             }
         }
         
