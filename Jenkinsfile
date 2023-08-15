@@ -61,16 +61,16 @@ pipeline {
             steps {
                 container('docker') {
                     sh '''
-                            touch oast-results.json
-                            chown 1000:1000 oast-results.json
+                            touch safety-results.json
+                            chown 1000:1000 safety-results.json
                             '''
 
-                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee oast-results.json'
+                    sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee safety-results.json'
                 }
             }
             post {
                 always {
-                    stash includes: 'oast-results.json', name: 'oast-results'
+                    stash includes: 'safety-results.json', name: 'safety-results'
                 }
             }
         }
