@@ -76,35 +76,26 @@ pipeline {
         //     }
         // }
 
-        stage("SAST: Trufflehog") {
-            steps {
-                container('docker') {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        git branch: 'python',
-                        url: 'https://github.com/beabelalv/devsecopspipeline.git'
-                        
+            stage('SCA: Trufflehog') {
+                steps {
+                    container('python') {
                         script {
-                            // Use a temporary directory in the container
                             def tempDir = "/tmp/trufflehog_scan"
-                            sh "mkdir -p ${tempDir}"
-                            
-                            // Run the scan in the temporary directory
+                            sh 'mkdir -p ' + tempDir
                             sh 'docker run -v "$(pwd)":/src -v "' + tempDir + ':' + tempDir + '" --rm hysnsec/trufflehog file:///src --json | tee ' + tempDir + '/trufflehog-results.json && chmod 666 ' + tempDir + '/trufflehog-results.json'
-                            
-                            // Copy the results file to Jenkins workspace
-                            sh "cp ${tempDir}/trufflehog-results.json ."
+                            sh 'cp ' + tempDir + '/trufflehog-results.json .'
                         }
                     }
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        sh 'chmod 666 trufflehog-results.json'
+                    }
                 }
-                sh 'chmod 666 trufflehog-results.json'
-                sh 'chown jenkins:jenkins trufflehog-results.json || echo "Unable to change file ownership"'
-            }
-            post {
-                always {
-                    stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
+                post {
+                    always {
+                        stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
+                    }
                 }
             }
-        }
 
         
 
