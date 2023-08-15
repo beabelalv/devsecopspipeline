@@ -80,7 +80,7 @@ pipeline {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        git branch: 'main',
+                        git branch: 'python',
                         url: 'https://github.com/beabelalv/devsecopspipeline.git'
                         sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
                     }
