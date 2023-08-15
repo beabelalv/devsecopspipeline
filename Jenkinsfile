@@ -83,8 +83,11 @@ pipeline {
                             git branch: 'main',
                             url: 'https://github.com/beabelalv/devsecopspipeline.git'
                             
-                            // Create the file first
-                            sh 'touch trufflehog-results.json'
+                            // Create the file with specific permissions
+                            sh '''
+                            touch trufflehog-results.json
+                            chmod 666 trufflehog-results.json
+                            '''
                             
                             sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
                         }
