@@ -77,24 +77,23 @@ pipeline {
         // }
 
             stage('SCA: Trufflehog') {
-                steps {
-                    container('python') {
-                        script {
-                            def tempDir = "/tmp/trufflehog_scan"
-                            sh 'mkdir -p ' + tempDir
-                            def jenkinsUID = sh(script: 'id -u', returnStdout: true).trim()
-                            def jenkinsGID = sh(script: 'id -g', returnStdout: true).trim()
-                            sh 'docker run --user ' + jenkinsUID + ':' + jenkinsGID + ' -v "$(pwd)":/src -v "' + tempDir + ':' + tempDir + '" --rm hysnsec/trufflehog file:///src --json > ' + tempDir + '/trufflehog-results.json'
-                            sh 'cp ' + tempDir + '/trufflehog-results.json .'
-                        }
+                agent {
+                    kubernetes {
+                        label 'jenkins-pod-label'
                     }
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        sh 'chmod 666 trufflehog-results.json'
+                }
+                steps {
+                    script {
+                        // Run trufflehog directly, outputting the results to a file in the Jenkins workspace
+                        sh '''
+                        docker run --rm hysnsec/trufflehog file:///src --json > trufflehog-results.json
+                        '''
+                        stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
                     }
                 }
                 post {
                     always {
-                        stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
+                        archiveArtifacts artifacts: 'trufflehog-results.json', allowEmptyArchive: true
                     }
                 }
             }
