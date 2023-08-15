@@ -89,7 +89,7 @@ pipeline {
                                 sh "mkdir -p ${tempDir}"
                                 
                                 // Run the scan in the temporary directory
-                                sh "docker run --user 1000:1000 -v "$(pwd)":/src -v "${tempDir}:${tempDir}" --rm hysnsec/trufflehog file:///src --json | tee ${tempDir}/trufflehog-results.json"
+                                sh 'docker run --user 1000:1000 -v "$(pwd)":/src -v "' + tempDir + ':' + tempDir + '" --rm hysnsec/trufflehog file:///src --json | tee ' + tempDir + '/trufflehog-results.json'
                                 
                                 // Copy the results file to Jenkins workspace
                                 sh "cp ${tempDir}/trufflehog-results.json ."
