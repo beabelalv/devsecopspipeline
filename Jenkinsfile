@@ -77,18 +77,15 @@ pipeline {
         // }
 
             stage('SCA: Trufflehog') {
-                agent {
-                    kubernetes {
-                        label 'jenkins-pod-label'
-                    }
-                }
                 steps {
-                    script {
-                        // Run trufflehog directly, outputting the results to a file in the Jenkins workspace
-                        sh '''
-                        docker run --rm hysnsec/trufflehog file:///src --json > trufflehog-results.json
-                        '''
-                        stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
+                    container('docker') {
+                        script {
+                            // Run trufflehog directly, outputting the results to a file in the Jenkins workspace
+                            sh '''
+                            docker run --rm hysnsec/trufflehog file:///src --json > trufflehog-results.json
+                            '''
+                            stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
+                        }
                     }
                 }
                 post {
