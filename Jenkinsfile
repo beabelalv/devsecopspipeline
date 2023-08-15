@@ -93,15 +93,11 @@ pipeline {
                                 
                                 // Copy the results file to Jenkins workspace
                                 sh "cp ${tempDir}/trufflehog-results.json ."
-                                
-                                // Adjust permissions
-                                sh 'chmod 666 trufflehog-results.json'
-                                
-                                // Debug: Check file ownership and permissions
-                                sh 'ls -l trufflehog-results.json'
                             }
                         }
                     }
+                    sh 'chmod 666 trufflehog-results.json'
+                    sh 'chown jenkins:jenkins trufflehog-results.json || echo "Unable to change file ownership"'
                 }
                 post {
                     always {
