@@ -76,22 +76,22 @@ pipeline {
         //     }
         // }
 
-        stage("SAST: Trufflehog") {
-            steps {
-                container('docker') {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        git branch: 'python',
-                        url: 'https://github.com/beabelalv/devsecopspipeline.git'
-                        sh 'docker run -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
+            stage("SAST: Trufflehog") {
+                steps {
+                    container('docker') {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                            git branch: 'python',
+                            url: 'https://github.com/beabelalv/devsecopspipeline.git'
+                            sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
+                        }
+                    }
+                }
+                post {
+                    always {
+                        stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
                     }
                 }
             }
-            post {
-                always {
-                    stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
-                }
-            }
-        }
         
 
         stage("SAST: Bandit") {
