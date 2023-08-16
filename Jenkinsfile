@@ -78,23 +78,22 @@ pipeline {
         stage('SCA: SonarQube') {
             steps {
                 script {
-                    // Define sonarUrl within the script block
-                    def sonarUrl = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
-                    
                     def scannerHome = tool 'SonarScanner1'
                     withSonarQubeEnv {
                         sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi -Dsonar.exclusions=TFM/**/*"
                     }
+
+                    // Use the provided SonarQube URL and retrieve the API token from Jenkins credentials
+                    def sonarUrl = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
                     
                     withCredentials([string(credentialsId: '479538b9-e276-441b-ac59-ba2e2373ca00', variable: 'SONAR_TOKEN')]) {
-                        // Use double quotes for the shell script block
                         sh """
-                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/issues/search?componentKeys=VamPi" > issues.json
+                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/issues/search?componentKeys=VamPi&statuses=OPEN" > open_issues.json
                         """
                     }
 
-                    // Archive the issues.json file
-                    archiveArtifacts artifacts: 'issues.json', allowEmptyArchive: true
+                    // Archive the open_issues.json file
+                    archiveArtifacts artifacts: 'open_issues.json', allowEmptyArchive: true
                 }
             }
         }
