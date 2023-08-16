@@ -88,15 +88,20 @@ pipeline {
                     
                     withCredentials([string(credentialsId: '479538b9-e276-441b-ac59-ba2e2373ca00', variable: 'SONAR_TOKEN')]) {
                         sh """
+                            # Retrieve open issues
                             curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/issues/search?componentKeys=VamPi&statuses=OPEN" > open_issues.json
+                            
+                            # Retrieve opened security hotspots
+                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/hotspots/search?projectKey=VamPi&statuses=TO_REVIEW" > open_hotspots.json
                         """
                     }
 
-                    // Archive the open_issues.json file
-                    archiveArtifacts artifacts: 'open_issues.json', allowEmptyArchive: true
+                    // Archive both the open_issues.json and open_hotspots.json files
+                    archiveArtifacts artifacts: 'open_issues.json,open_hotspots.json', allowEmptyArchive: true
                 }
             }
         }
+
 
 
             stage("SAST: Trufflehog") {
