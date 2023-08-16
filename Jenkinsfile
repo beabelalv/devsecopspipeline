@@ -86,7 +86,7 @@ pipeline {
                     // Use the provided SonarQube URL and retrieve the API token from Jenkins credentials
                     def sonarUrl = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
                     
-                    withCredentials([string(credentialsId: '479538b9-e276-441b-ac59-ba2e2373ca00', variable: 'SONAR_TOKEN')]) {
+                    withCredentials([string(credentialsId: '4bbabd67-8503-40b7-9b40-43a559239eb0', variable: 'SONAR_TOKEN')]) {
                         sh """
                             # Retrieve open issues
                             curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/issues/search?componentKeys=VamPi&statuses=OPEN" > open_issues.json
