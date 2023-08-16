@@ -82,6 +82,16 @@ pipeline {
                     withSonarQubeEnv {
                         sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi -Dsonar.exclusions=TFM/**/*"
                     }
+
+                    // Use the provided SonarQube URL and retrieve the API token from Jenkins credentials using the provided ID
+                    def sonarUrl = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
+                    
+                    withCredentials([string(credentialsId: '479538b9-e276-441b-ac59-ba2e2373ca00', variable: 'SONAR_TOKEN')]) {
+                        sh """
+                            curl -u $SONAR_TOKEN: -X GET '$sonarUrl/api/issues/search?componentKeys=VamPi' > issues.json
+                            cat issues.json
+                        """
+                    }
                 }
             }
         }
