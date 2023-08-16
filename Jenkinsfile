@@ -75,16 +75,16 @@ pipeline {
             }
         }
 
-        // stage('SCA: SonarQube') {
-        //     steps {
-        //         script {
-        //             def scannerHome = tool 'SonarScanner1'
-        //             withSonarQubeEnv {
-        //                 sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi -Dsonar.exclusions=TFM/**/*"
-        //             }
-        //         }
-        //     }
-        // }
+        stage('SCA: SonarQube') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner1'
+                    withSonarQubeEnv {
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi -Dsonar.exclusions=TFM/**/*"
+                    }
+                }
+            }
+        }
 
             stage("SAST: Trufflehog") {
                 steps {
