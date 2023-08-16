@@ -97,7 +97,8 @@ pipeline {
                     }
 
                     // Archive both the open_issues.json and open_hotspots.json files
-                    stash includes: 'sonarqube_open_issues.json,sonarqube_open_hotspots.json', name: 'sonarqube_open_issues,sonarqube_open_hotspots'
+                    stash includes: 'sonarqube_open_issues.json', name: 'sonarqube_open_issues'
+                    stash includes: 'sonarqube_open_hotspots.json', name: 'sonarqube_open_hotspots'
                 }
             }
         }
