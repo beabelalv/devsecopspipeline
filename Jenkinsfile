@@ -176,11 +176,14 @@ pipeline {
                     script {
                         echo "Activating virtual environment:"
                         sh '. venv/bin/activate'
-                        unstash 'sonarqube_open_issues'
-                        unstash 'sonarqube_open_hotspots'
+                        sh 'ls -l'
+                        unstash 'sonarqube_open_issues' // Retrieve the stashed issues file
+                        unstash 'sonarqube_open_hotspots' // Retrieve the stashed hotspots file
+                        sh 'ls -l'
+                        echo "Workspace directory is: ${env.WORKSPACE}"
 
-                        // Call the generateSonarQubeReport method
-                        generateSonarqubeReport()
+                        // Call the generateSonarQubeReport method with the paths to the JSON files
+                        generateSonarqubeReport(issues_json: 'sonarqube_open_issues.json', hotspots_json: 'sonarqube_open_hotspots.json')
                     }
                 }
             }
