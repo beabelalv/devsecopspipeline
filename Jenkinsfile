@@ -76,11 +76,11 @@ pipeline {
         }
 
         stage('SCA: SonarQube') {
-            // Define sonarUrl for the entire stage
-            def sonarUrl = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
-
             steps {
                 script {
+                    // Define sonarUrl within the script block
+                    def sonarUrl = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
+                    
                     def scannerHome = tool 'SonarScanner1'
                     withSonarQubeEnv {
                         sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi -Dsonar.exclusions=TFM/**/*"
@@ -98,6 +98,7 @@ pipeline {
                 }
             }
         }
+
 
             stage("SAST: Trufflehog") {
                 steps {
