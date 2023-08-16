@@ -180,7 +180,7 @@ pipeline {
                         unstash 'sonarqube_open_hotspots'
 
                         // Call the generateSonarQubeReport method
-                        generateSonarQubeReport()
+                        generateSonarqubeReport()
                     }
                 }
             }
