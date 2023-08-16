@@ -97,6 +97,7 @@ pipeline {
                     }
 
                     // Archive both the open_issues.json and open_hotspots.json files
+                    stash includes: 'sonarqube_open_issues.json,sonarqube_open_hotspots.json', name: 'sonarqube_open_issues,sonarqube_open_hotspots'
                     archiveArtifacts artifacts: 'sonarqube_open_issues.json,sonarqube_open_hotspots.json', allowEmptyArchive: true
                 }
             }
@@ -165,6 +166,27 @@ pipeline {
                         // Continue with your pipeline...
                         sh 'pip install -r requirements.txt'
                     }
+                }
+            }
+        }
+
+        stage("Report Generation: SonarQube") {
+            steps {
+                container('python') {
+                    script {
+                        echo "Activating virtual environment:"
+                        sh '. venv/bin/activate'
+                        unstash 'sonarqube_open_issues'
+                        unstash 'sonarqube_open_hotspots'
+
+                        // Call the generateSonarQubeReport method
+                        generateSonarQubeReport()
+                    }
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'sonarqube/sonarqube-report.html', fingerprint: true
                 }
             }
         }
