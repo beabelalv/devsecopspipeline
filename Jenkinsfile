@@ -89,10 +89,10 @@ pipeline {
                     withCredentials([string(credentialsId: '11a29cee-2600-4e76-8179-62a7a8cafffe', variable: 'SONAR_TOKEN')]) {
                         sh """
                             # Retrieve open issues
-                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/issues/search?componentKeys=VamPi&statuses=OPEN" > sonarqube_open_issues.json
+                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/issues/search?componentKeys=DVPWA&statuses=OPEN" > sonarqube_open_issues.json
                             
                             # Retrieve opened security hotspots
-                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/hotspots/search?projectKey=VamPi&statuses=TO_REVIEW" > sonarqube_open_hotspots.json
+                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/hotspots/search?projectKey=DVPWA&statuses=TO_REVIEW" > sonarqube_open_hotspots.json
                         """
                     }
 
@@ -215,26 +215,26 @@ pipeline {
             }
         }
 
-        stage("Report Generation: Trufflehog") {
-            steps {
-                container('python') {
-                    script {
-                        echo "Activating virtual environment:"
-                        sh '. venv/bin/activate'
-                        unstash 'trufflehog-results' // Retrieve the stashed Trufflehog results file
-                        echo "Workspace directory is: ${env.WORKSPACE}"
+        // stage("Report Generation: Trufflehog") {
+        //     steps {
+        //         container('python') {
+        //             script {
+        //                 echo "Activating virtual environment:"
+        //                 sh '. venv/bin/activate'
+        //                 unstash 'trufflehog-results' // Retrieve the stashed Trufflehog results file
+        //                 echo "Workspace directory is: ${env.WORKSPACE}"
 
-                        // Call the generateTrufflehogReport method with the path to the JSON file
-                        generateTrufflehogReport(json: 'trufflehog-results.json')
-                    }
-                }
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'trufflehog/trufflehog-report.html', fingerprint: true
-                }
-            }
-        }
+        //                 // Call the generateTrufflehogReport method with the path to the JSON file
+        //                 generateTrufflehogReport(json: 'trufflehog-results.json')
+        //             }
+        //         }
+        //     }
+        //     post {
+        //         always {
+        //             archiveArtifacts artifacts: 'trufflehog/trufflehog-report.html', fingerprint: true
+        //         }
+        //     }
+        // }
 
         stage("Report Generation: Bandit") {
             steps {
