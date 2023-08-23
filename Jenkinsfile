@@ -219,26 +219,26 @@ pipeline {
             }
         }
 
-        // stage("Report Generation: Trufflehog") {
-        //     steps {
-        //         container('python') {
-        //             script {
-        //                 echo "Activating virtual environment:"
-        //                 sh '. venv/bin/activate'
-        //                 unstash 'trufflehog-results' // Retrieve the stashed Trufflehog results file
-        //                 echo "Workspace directory is: ${env.WORKSPACE}"
+        stage("Report Generation: Trufflehog") {
+            steps {
+                container('python') {
+                    script {
+                        echo "Activating virtual environment:"
+                        sh '. venv/bin/activate'
+                        unstash 'trufflehog-results' // Retrieve the stashed Trufflehog results file
+                        echo "Workspace directory is: ${env.WORKSPACE}"
 
-        //                 // Call the generateTrufflehogReport method with the path to the JSON file
-        //                 generateTrufflehogReport(json: 'trufflehog-results.json')
-        //             }
-        //         }
-        //     }
-        //     post {
-        //         always {
-        //             archiveArtifacts artifacts: 'trufflehog/trufflehog-report.html', fingerprint: true
-        //         }
-        //     }
-        // }
+                        // Call the generateTrufflehogReport method with the path to the JSON file
+                        generateTrufflehogReport(json: 'trufflehog-results.json')
+                    }
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'trufflehog/trufflehog-report.html', fingerprint: true
+                }
+            }
+        }
 
         stage("Report Generation: Bandit") {
             steps {
