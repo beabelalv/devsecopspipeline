@@ -118,8 +118,13 @@ pipeline {
                             chown 1000:1000 trufflehog-results.json
                             '''
                             
-                            sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee trufflehog-results.json'
-                        }
+                            sh '''
+                            echo '[' > trufflehog-results.json && \
+                            docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | tee -a trufflehog-results.json | sed 's/}$/},/g' >> trufflehog-results.json && \
+                            echo ']' >> trufflehog-results.json && \
+                            sed -i '$ s/},/}/' trufflehog-results.json
+                            '''
+                            }
                     }
                 }
                 post {
