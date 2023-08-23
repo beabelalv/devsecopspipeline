@@ -174,29 +174,29 @@ pipeline {
             }
         }
 
-        // stage("Report Generation: SonarQube") {
-        //     steps {
-        //         container('python') {
-        //             script {
-        //                 echo "Activating virtual environment:"
-        //                 sh '. venv/bin/activate'
-        //                 sh 'ls -l'
-        //                 unstash 'sonarqube_open_issues' // Retrieve the stashed issues file
-        //                 unstash 'sonarqube_open_hotspots' // Retrieve the stashed hotspots file
-        //                 sh 'ls -l'
-        //                 echo "Workspace directory is: ${env.WORKSPACE}"
+        stage("Report Generation: SonarQube") {
+            steps {
+                container('python') {
+                    script {
+                        echo "Activating virtual environment:"
+                        sh '. venv/bin/activate'
+                        sh 'ls -l'
+                        unstash 'sonarqube_open_issues' // Retrieve the stashed issues file
+                        unstash 'sonarqube_open_hotspots' // Retrieve the stashed hotspots file
+                        sh 'ls -l'
+                        echo "Workspace directory is: ${env.WORKSPACE}"
 
-        //                 // Call the generateSonarQubeReport method with the paths to the JSON files
-        //                 generateSonarqubeReport(issues_json: 'sonarqube_open_issues.json', hotspots_json: 'sonarqube_open_hotspots.json')
-        //             }
-        //         }
-        //     }
-        //     post {
-        //         always {
-        //             archiveArtifacts artifacts: 'sonarqube/sonarqube-report.html', fingerprint: true
-        //         }
-        //     }
-        // }
+                        // Call the generateSonarQubeReport method with the paths to the JSON files
+                        generateSonarqubeReport(issues_json: 'sonarqube_open_issues.json', hotspots_json: 'sonarqube_open_hotspots.json')
+                    }
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'sonarqube/sonarqube-report.html', fingerprint: true
+                }
+            }
+        }
 
         stage("Report Generation: Safety") {
             steps {
