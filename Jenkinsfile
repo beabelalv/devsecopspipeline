@@ -80,7 +80,7 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarScanner1'
                     withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=VamPi -Dsonar.exclusions=TFM/**/*"
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=DVPWA -Dsonar.exclusions=TFM/**/*"
                     }
 
                     // Use the provided SonarQube URL and retrieve the API token from Jenkins credentials
