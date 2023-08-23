@@ -109,7 +109,7 @@ pipeline {
                 steps {
                     container('docker') {
                         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                            git branch: 'main',
+                            git branch: 'DVPWA',
                             url: 'https://github.com/beabelalv/devsecopspipeline.git'
                             
                             // Create the file and change its ownership
