@@ -267,7 +267,7 @@ pipeline {
 
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: '**/*results.json', fingerprint: true
+                archiveArtifacts artifacts: '**/*.json', fingerprint: true
             }
         }
         
