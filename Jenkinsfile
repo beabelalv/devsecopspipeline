@@ -33,20 +33,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Setup Virtual Environment') {
-            steps {
-                container('python') {
-                    sh 'python3 -m venv venv'
-                    sh '. venv/bin/activate'
-                    script {
-                        def requirementsContent = libraryResource('requirements.txt')
-                        writeFile file: 'requirements.txt', text: requirementsContent
-                        sh 'pip install -r requirements.txt'
-                    }
-                }
-            }
-        }
         
         stage('[TEST]'){
             steps{
@@ -149,6 +135,19 @@ pipeline {
             }
         }
 
+        stage('Setup Virtual Environment') {
+            steps {
+                container('python') {
+                    sh 'python3 -m venv venv'
+                    sh '. venv/bin/activate'
+                    script {
+                        def requirementsContent = libraryResource('requirements.txt')
+                        writeFile file: 'requirements.txt', text: requirementsContent
+                        sh 'pip install -r requirements.txt'
+                    }
+                }
+            }
+        }
 
         stage("Report Generation: SonarQube") {
             steps {
