@@ -1,5 +1,18 @@
 @Library('report-generator') _
 
+// General Configuration
+def repoUrl = 'https://github.com/beabelalv/devsecopspipeline.git'
+
+// Configuration for the "SAST: Trufflehog" stage
+def trufflehogRepoBranch = 'DVPWA'
+
+// Configuration for the "SCA: SonarQube" stage
+def sonarProjectKey = 'DVPWA'
+def sonarExclusions = 'TFM/**/*'
+
+// Configuration for the "SAST: Bandit" stage
+def banditExclusions = 'TFM'
+
 pipeline {
     agent {
         kubernetes {
@@ -23,7 +36,6 @@ pipeline {
     }  
     
     stages {
-
         stage('PREREQUIREMENTS') {
             steps {
                 container('python') {
@@ -47,7 +59,6 @@ pipeline {
                             touch safety-results.json
                             chown 1000:1000 safety-results.json
                             '''
-
                     sh 'docker run -v "$(pwd)":/src --rm hysnsec/safety check -r requirements.txt --json | tee safety-results.json'
                 }
             }
@@ -63,18 +74,18 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarScanner1'
                     withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=DVPWA -Dsonar.exclusions=TFM/**/*"
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${sonarProjectKey} -Dsonar.exclusions=${sonarExclusions}"
                     }
-
+                    
                     def sonarUrl = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
                     
                     withCredentials([string(credentialsId: '11a29cee-2600-4e76-8179-62a7a8cafffe', variable: 'SONAR_TOKEN')]) {
                         sh """
                             # Retrieve open issues
-                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/issues/search?componentKeys=DVPWA&statuses=OPEN" > sonarqube_open_issues.json
+                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/issues/search?componentKeys=${sonarProjectKey}&statuses=OPEN" > sonarqube_open_issues.json
                             
                             # Retrieve opened security hotspots
-                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/hotspots/search?projectKey=DVPWA&statuses=TO_REVIEW" > sonarqube_open_hotspots.json
+                            curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/hotspots/search?projectKey=${sonarProjectKey}&statuses=TO_REVIEW" > sonarqube_open_hotspots.json
                         """
                     }
 
@@ -82,44 +93,46 @@ pipeline {
                     stash includes: 'sonarqube_open_hotspots.json', name: 'sonarqube_open_hotspots'
                 }
             }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'sonarqube/sonarqube-report.html', fingerprint: true
+                }
+            }
         }
 
-
-
-            stage("SAST: Trufflehog") {
-                steps {
-                    container('docker') {
-                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                            git branch: 'DVPWA',
-                            url: 'https://github.com/beabelalv/devsecopspipeline.git'
-                            
-                            sh '''
-                            touch trufflehog-results.json
-                            chown 1000:1000 trufflehog-results.json
-                            '''
-                            
-                            sh '''
-                            echo '[' > trufflehog-results.json && \
-                            docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | sed 's/}$/},/' | tee -a trufflehog-results.json && \
-                            sed -i '$ s/},/}/' trufflehog-results.json && \
-                            echo ']' >> trufflehog-results.json '''
-                            }
-                    }
-                }
-                post {
-                    always {
-                        stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
+        stage("SAST: Trufflehog") {
+            steps {
+                container('docker') {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                        git branch: trufflehogRepoBranch,
+                        url: repoUrl
+                        
+                        sh '''
+                        touch trufflehog-results.json
+                        chown 1000:1000 trufflehog-results.json
+                        '''
+                        
+                        sh '''
+                        echo '[' > trufflehog-results.json && \
+                        docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/trufflehog file:///src --json | sed 's/}$/},/' | tee -a trufflehog-results.json && \
+                        sed -i '$ s/},/}/' trufflehog-results.json && \
+                        echo ']' >> trufflehog-results.json '''
                     }
                 }
             }
-
-        
+            post {
+                always {
+                    stash includes: 'trufflehog-results.json', name: 'trufflehog-results'
+                }
+            }
+        }
 
         stage("SAST: Bandit") {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/bandit -r /src --exclude TFM -f json -o /src/bandit-results.json'                    }
+                        sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/bandit -r /src --exclude ${banditExclusions} -f json -o /src/bandit-results.json'
+                    }
                 }
             }
             post {
@@ -128,6 +141,7 @@ pipeline {
                 }
             }
         }
+        
 
         stage('[REPORTS CREATION]'){
             steps{
