@@ -4,10 +4,10 @@
 def repoUrl = 'https://github.com/beabelalv/devsecopspipeline.git'
 
 // Configuration for the "SAST: Trufflehog" stage
-def trufflehogRepoBranch = 'DVPWA'
+def trufflehogRepoBranch = 'CloudGoat'
 
 // Configuration for the "SCA: SonarQube" stage
-def sonarProjectKey = 'DVPWA'
+def sonarProjectKey = 'CloudGoat'
 def sonarExclusions = 'TFM/**/*'
 
 pipeline {
