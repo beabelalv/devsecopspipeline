@@ -10,9 +10,6 @@ def trufflehogRepoBranch = 'DVPWA'
 def sonarProjectKey = 'DVPWA'
 def sonarExclusions = 'TFM/**/*'
 
-// Configuration for the "SAST: Bandit" stage
-def banditExclusions = 'TFM'
-
 pipeline {
     agent {
         kubernetes {
@@ -129,7 +126,7 @@ pipeline {
             steps {
                 container('docker') {
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/bandit -r /src --exclude ${banditExclusions} -f json -o /src/bandit-results.json'
+                        sh 'docker run --user 1000:1000 -v "$(pwd)":/src --rm hysnsec/bandit -r /src -f json -o /src/bandit-results.json'
                     }
                 }
             }
