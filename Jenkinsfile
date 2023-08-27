@@ -88,14 +88,12 @@ pipeline {
                             curl -u \$SONAR_TOKEN: -X GET "$sonarUrl/api/hotspots/search?projectKey=${sonarProjectKey}&statuses=TO_REVIEW" > sonarqube_open_hotspots.json
                         """
                     }
-
-                    stash includes: 'sonarqube_open_issues.json', name: 'sonarqube_open_issues'
-                    stash includes: 'sonarqube_open_hotspots.json', name: 'sonarqube_open_hotspots'
                 }
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'sonarqube/sonarqube-report.html', fingerprint: true
+                    stash includes: 'sonarqube_open_issues.json', name: 'sonarqube_open_issues'
+                    stash includes: 'sonarqube_open_hotspots.json', name: 'sonarqube_open_hotspots'
                 }
             }
         }
