@@ -30,26 +30,23 @@ pipeline {
                     sh 'python3 --version || echo Python 3 is not installed'
                     echo 'Checking Pip...'
                     sh 'pip --version || echo Pip is not installed'
-
-                    sh 'pwd' // prints current working directory
-                    sh 'ls -R' // prints directory structure
                 }
             }
         }
 
-        // stage("[BUILD]") {
-        //     steps {
-        //         container('python') {
-        //             sh """
-        //             pip install --user virtualenv
-        //             python3 -m virtualenv env
-        //             . env/bin/activate
-        //             pip install -r requirements.txt 
-        //             """
-        //             //Lo borro pero iria arriba python3 app.py
-        //         }
-        //     }
-        // }
+        stage('Setup Virtual Environment') {
+            steps {
+                container('python') {
+                    sh 'python3 -m venv venv'
+                    sh '. venv/bin/activate'
+                    script {
+                        def requirementsContent = libraryResource('requirements.txt')
+                        writeFile file: 'requirements.txt', text: requirementsContent
+                        sh 'pip install -r requirements.txt'
+                    }
+                }
+            }
+        }
         
         stage('[TEST]'){
             steps{
@@ -83,7 +80,6 @@ pipeline {
                         sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=DVPWA -Dsonar.exclusions=TFM/**/*"
                     }
 
-                    // Use the provided SonarQube URL and retrieve the API token from Jenkins credentials
                     def sonarUrl = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
                     
                     withCredentials([string(credentialsId: '11a29cee-2600-4e76-8179-62a7a8cafffe', variable: 'SONAR_TOKEN')]) {
@@ -96,7 +92,6 @@ pipeline {
                         """
                     }
 
-                    // Archive both the open_issues.json and open_hotspots.json files
                     stash includes: 'sonarqube_open_issues.json', name: 'sonarqube_open_issues'
                     stash includes: 'sonarqube_open_hotspots.json', name: 'sonarqube_open_hotspots'
                 }
@@ -112,7 +107,6 @@ pipeline {
                             git branch: 'DVPWA',
                             url: 'https://github.com/beabelalv/devsecopspipeline.git'
                             
-                            // Create the file and change its ownership
                             sh '''
                             touch trufflehog-results.json
                             chown 1000:1000 trufflehog-results.json
@@ -154,25 +148,7 @@ pipeline {
                 echo '[REPORTS CREATION]'
             }
         }
-        
-        stage('Setup Virtual Environment') {
-            steps {
-                container('python') {
-                    sh 'python3 -m venv venv'
-                    sh '. venv/bin/activate'
-                    script {
-                        // Retrieve requirements.txt from shared library
-                        def requirementsContent = libraryResource('requirements.txt')
-                        
-                        // Write the requirements to a new file in the workspace
-                        writeFile file: 'requirements.txt', text: requirementsContent
-                        
-                        // Continue with your pipeline...
-                        sh 'pip install -r requirements.txt'
-                    }
-                }
-            }
-        }
+
 
         stage("Report Generation: SonarQube") {
             steps {
@@ -180,13 +156,9 @@ pipeline {
                     script {
                         echo "Activating virtual environment:"
                         sh '. venv/bin/activate'
-                        sh 'ls -l'
-                        unstash 'sonarqube_open_issues' // Retrieve the stashed issues file
-                        unstash 'sonarqube_open_hotspots' // Retrieve the stashed hotspots file
-                        sh 'ls -l'
-                        echo "Workspace directory is: ${env.WORKSPACE}"
+                        unstash 'sonarqube_open_issues' 
+                        unstash 'sonarqube_open_hotspots'
 
-                        // Call the generateSonarQubeReport method with the paths to the JSON files
                         generateSonarqubeReport(issues_json: 'sonarqube_open_issues.json', hotspots_json: 'sonarqube_open_hotspots.json')
                     }
                 }
@@ -204,10 +176,9 @@ pipeline {
                     script {
                         echo "Activating virtual environment:"
                         sh '. venv/bin/activate'
-                        unstash 'safety-results' // Retrieve the stashed Trufflehog results file
+                        unstash 'safety-results' 
                         echo "Workspace directory is: ${env.WORKSPACE}"
 
-                        // Call the generateSafetyReport method with the path to the JSON file
                         generateSafetyReport(json: 'safety-results.json')
                     }
                 }
@@ -225,10 +196,9 @@ pipeline {
                     script {
                         echo "Activating virtual environment:"
                         sh '. venv/bin/activate'
-                        unstash 'trufflehog-results' // Retrieve the stashed Trufflehog results file
+                        unstash 'trufflehog-results' 
                         echo "Workspace directory is: ${env.WORKSPACE}"
 
-                        // Call the generateTrufflehogReport method with the path to the JSON file
                         generateTrufflehogReport(json: 'trufflehog-results.json')
                     }
                 }
@@ -246,12 +216,8 @@ pipeline {
                     script {
                         echo "Activating virtual environment:"
                         sh '. venv/bin/activate'
-                        sh 'ls -l'
-                        unstash 'bandit-results' // This line retrieves the stashed file
-                        sh 'ls -l'
-                        echo "Workspace directory is: ${env.WORKSPACE}"
+                        unstash 'bandit-results' 
 
-                        // Call the generateBanditReport method with the path to the JSON file
                         generateBanditReport(json: 'bandit-results.json')
                     }
                 }
