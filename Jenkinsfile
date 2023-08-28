@@ -1,9 +1,7 @@
 @Library('report-generator') _
 
-// General Configuration
-def repoUrl = 'https://github.com/beabelalv/devsecopspipeline.git'
-
 // Configuration for the "SAST: Trufflehog" stage
+def repoUrl = 'https://github.com/beabelalv/devsecopspipeline.git'
 def trufflehogRepoBranch = 'CloudGoat'
 
 // Configuration for the "SCA: SonarQube" stage
